@@ -1,20 +1,22 @@
 # SiriGPT
-Talk with ChatGPT using your voice. 
+Talk with ChatGPT using your voice and camera. 
 
-To gain experience with the OpenAI api, I created this tool to chat with GPT3.5-turbo using your voice. The OpenAI Whisper api is used to transcribe voices, and the GPT api is used as the chat client. 
+As an extension to [SiriGPT](https://github.com/deboradum/SiriGPT), I created SiriVisionGPT. With SiriVisionGPT, you can not only talk to chatGPT with your voice, but also using your camera, making use of YOLO-NAS object recognition.
+
+WIP
 
 # Usage
-To use SiriGPT, you first need to install all requirements, use the following command.
+To use siriVisionGPT.py, you first need to install all requirements, use the following command.
 ```
 python3 -m pip install -r requirements.txt
 ```
 Next, you need an [OpenAI api key](https://platform.openai.com/overview). Add this key to your .env file, and you can start the client using:
 ```
-python3 siriGPT.py
+python3 siriVisionGPT.py.py
 ```
 or:
 ```
-python3 siriGPT.py -mh <max_history> -c <num_channels> -d <recording_duration>
+python3 siriVisionGPT.py.py -mh <max_history> -c <num_channels> -d <recording_duration>
 ```
 With parameters:
 ```
