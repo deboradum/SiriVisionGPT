@@ -62,8 +62,8 @@ def record(event, query):
 def tts(text):
     if os.path.isfile('tts.mp3'):
         os.remove('tts.mp3')
-
-    s = gtts.gTTS(text)
+    global language
+    s = gtts.gTTS(text, lang=language)
     s.save('tts.mp3')
     playsound.playsound('tts.mp3')
 
@@ -71,9 +71,52 @@ def tts(text):
         os.remove('tts.mp3')
 
 
+# Checks if language is supported.
+def is_supported_lan(lan):
+    # Supported languages by Whisper, ChatGPT and gtts.
+    supported = ['af', 'ar', 'bg', 'bs', 'ca', 'cs', 'da', 'de', 'el', 'en',
+                 'es', 'et', 'fi', 'fr', 'hi', 'hr', 'hu', 'id', 'is', 'it',
+                 'iw', 'ja', 'kn', 'ko', 'lv', 'mr', 'ms', 'ne', 'nl', 'no',
+                 'pl', 'pt', 'ro', 'ru', 'sk', 'sr', 'sv', 'sw', 'ta', 'th',
+                 'tr', 'uk', 'ur', 'vi']
+
+    if lan in supported:
+        return lan
+    else:
+        raise argparse.ArgumentTypeError(f"Language {lan} is not supported.")
+
+# Returns starting chat sentence.
+def get_start_sentence(lan):
+    sentences = {'af': "Wat kan ek vir jou doen?", 'ar': "ما الذي يمكنني أن أفعله من أجلك؟",
+                 'bg': "Какво мога да направя за теб?", 'bs': "Šta mogu učiniti za vas?",
+                 'ca': "Què puc fer per tu?", 'cs': "Co pro vás mohu udělat?",
+                 'da': "Hvad kan jeg gøre for dig?", 'de': "Was kann ich für Dich tun?",
+                 'el': "Τι μπορώ να κάνω για σένα?", 'en': "What can I do for you?",
+                 'es': "¿Qué puedo hacer por ti?", 'et': "Mida ma saan teie heaks teha?",
+                 'fi': "Mitä voin tehdä puolestasi?", 'fr': "Que puis-je faire pour vous?",
+                 'hi': "मेरे द्वारा आपके लिए क्या किया जा सकता है?", 'hr': "Što mogu učiniti za tebe?",
+                 'hu': "Mit tehetek önért?", 'id': "Apa yang bisa saya lakukan untuk Anda?",
+                 'is': "Hvað get ég gert fyrir þig?", 'it': "Cosa posso fare per lei?",
+                 'iw': "מה אני יכול לעשות בשבילך?", 'ja': "どういうご用件ですか？",
+                 'kn': "ನಾನು ನಿಮಗಾಗಿ ಏನು ಮಾಡಬಹುದು?", 'ko': "내가 당신을 위해 무엇을 할 수?",
+                 'lv': "Ko es varu darīt jūsu labā?", 'mr': "मी तुमच्यासाठी काय करू शकतो?",
+                 'ms': "Apa yang boleh saya lakukan untuk awak?", 'ne': "म तिम्रो लागि के गर्न सक्छु?",
+                 'nl': "Wat kan ik voor je doen?", 'no': "Hva kan jeg gjøre for deg?",
+                 'pl': "Co mogę dla ciebie zrobić?", 'pt': "O que posso fazer para você?",
+                 'ro': "Cu ce vă pot ajuta?", 'ru': "Что я могу сделать для вас?",
+                 'sk': "Čo pre vás môžem urobiť?", 'sr': "Шта могу да учиним за вас?",
+                 'sv': "Vad kan jag hjälpa dig med?", 'sw': "Naweza kukusaidia vipi?",
+                 'ta': "உனக்காக நான் என்ன செய்ய முடியும்?", 'th': "ฉันทำอะไรให้คุณได้บ้าง",
+                 'tr': "Sizin için ne yapabilirim?", 'uk': "Чим я можу тобі допомогти?",
+                 'ur': "میں آپکے لیے کیا کرسکتا ہوں؟", 'vi': "Tôi có thể làm gì cho bạn?"}
+
+    return sentences[lan]
+
+
 def main():
     # Initial text.
-    response = "What can I do for you?"
+    global language
+    response = get_start_sentence(language)
     try:
         while True:
             # prints & speaks response.
@@ -105,7 +148,7 @@ def main():
                 else:
                     print(f'\t{prompt}\n')
 
-            response, tokens_used = gpt.conversate(prompt)
+            response, tokens_used = gpt.conversate(prompt, language)
             global total_tokens
             total_tokens += tokens_used
 
@@ -131,11 +174,14 @@ if __name__ == "__main__":
                         help='Number of channels to record.')
     parser.add_argument('-d', '--duration', type=int, default=6,
                         help='Number of seconds to record.')
+    parser.add_argument('-l', '--language', type=is_supported_lan, default='en',
+                        help="Language to chat in. Supported languages are: af, ar, bg, bs, ca, cs, da, de, el, en, es, et, fi, fr, hi, hr, hu, id, is, it, iw, ja, kn, ko, lv, mr, ms, ne, nl, no, pl, pt, ro, ru, sk, sr, sv, sw, ta, th, tr, uk, ur, vi")
     args = vars(parser.parse_args())
     gpt.max_history = args['history']
-    global channels, rec_dur
+    global channels, rec_dur, language
     channels = args['channels']
     rec_dur = args['duration']
+    language = args['language']
 
     main()
 
