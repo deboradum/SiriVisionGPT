@@ -1,9 +1,34 @@
-import super_gradients
+from ultralytics import YOLO
+import cv2
 
-yolo_nas = super_gradients.training.models.get("yolo_nas_l", pretrained_weights="coco")
-prediction = yolo_nas.predict("https://deci-pretrained-models.s3.amazonaws.com/sample_images/beatles-abbeyroad.jpg")
+model = YOLO('yolov8n.pt')
 
-print(prediction.__dir__())
-for i in prediction._images_prediction_lst:
-    print(i)
-    print("\n\n")
+
+def infer_video():
+    cap = cv2.VideoCapture(1)
+    if not cap.isOpened():
+        print("Cannot open camera")
+        exit()
+
+    while True:
+        # Capture frame-by-frame.
+        succes, frame = cap.read()
+        # Check is frame is read correctly.
+        if not succes:
+            print("Can't receive frame. Exiting ...")
+            break
+        # Predict with yolo.
+        results = model.predict(frame, conf=0.6, device='mps', vid_stride=True)
+        print(len(results))
+        # plot object boxes.
+        annotated_frame = results[0].plot()
+
+        # Display the resulting frame
+        cv2.imshow('frame', annotated_frame)
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+infer_video()
