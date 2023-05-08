@@ -9,6 +9,8 @@ class YoloHandler():
         self.rec_dur = rec_dur
 
     def infer_video(self):
+        objects = ['Apple', 'Beef', 'Banana']
+
         start = time.time()
         cv2.startWindowThread()
         cap = cv2.VideoCapture(0)
@@ -24,8 +26,7 @@ class YoloHandler():
                 print("Can't receive frame. Exiting ...")
                 break
             # Predict with yolo.
-            results = model.predict(frame, conf=0.6, device='mps', vid_stride=True)
-            print(len(results))
+            results = model.predict(frame, conf=0.6, device='mps', vid_stride=True, verbose=False)
             # plot object boxes.
             annotated_frame = results[0].plot()
 
@@ -38,4 +39,8 @@ class YoloHandler():
         cv2.destroyAllWindows()
         cv2.waitKey(1)
 
-        return
+        objects_s = ''
+        for i in objects:
+            objects_s +=  f"{i}, " 
+
+        return objects_s

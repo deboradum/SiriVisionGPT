@@ -128,8 +128,7 @@ def main():
 
             prompt = ""
             if 'show' in gpt_handler.history[-1]['content']:
-                yolo_handler.infer_video()
-                prompt = 'Apple, pasta, beef'
+                prompt = f'{yolo_handler.infer_video()}\n'
             else:
                 prompt = input("\t")
 
