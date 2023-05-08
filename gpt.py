@@ -1,29 +1,29 @@
 import dotenv
 import openai
 
+
 # Sets API key.
 config = dotenv.dotenv_values(".env")
 openai.api_key = config['OPENAI_API_KEY']
-first = True
-history = [{"role": "system", "content": "You are a helpful assistant that gives concise answers."}]
 
-max_history = 10
+class GPThandler():
+    def __init__(self, max_history, language):
+        self.history = [{"role": "system", "content": f"You are a helpful assistant that gives concise answers. You answer in the language {language}"}]
+        self.max_history = max_history
 
-def append_history(message):
-    if len(history) >= max_history:
-        del history[1:3]
+    def append_history(self, message):
+        if len(self.history) >= self.max_history:
+            del self.history[1:3]
 
-    history.append(message)
+        self.history.append(message)
 
 
-def conversate(prompt, language):
-    if first:
-        history = [{"role": "system", "content": f"You are a helpful assistant that gives concise answers. You answer in the language {language}"}]
-    message = {"role": "user", "content": prompt}
-    append_history(message)
-    r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=history)
+    def conversate(self, prompt):
+        message = {"role": "user", "content": prompt}
+        self.append_history(message)
+        r = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=self.history)
 
-    reply = r['choices'][0]['message']['content']
-    tokens_used = r['usage']['total_tokens']
+        reply = r['choices'][0]['message']['content']
+        tokens_used = r['usage']['total_tokens']
 
-    return reply, tokens_used
+        return reply, tokens_used

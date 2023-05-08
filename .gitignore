@@ -4,3 +4,4 @@ testData
 .DS_Store
 yolov8n.pt
 *.MOV
+__pycache__

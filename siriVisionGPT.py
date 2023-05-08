@@ -115,7 +115,8 @@ def get_start_sentence(lan):
 
 def main():
     # Initial text.
-    global language
+    global language, history_len
+    gpt_handler = gpt.GPThandler(history_len, language)
     response = get_start_sentence(language)
     try:
         while True:
@@ -148,7 +149,7 @@ def main():
                 else:
                     print(f'\t{prompt}\n')
 
-            response, tokens_used = gpt.conversate(prompt, language)
+            response, tokens_used = gpt_handler.conversate(prompt)
             global total_tokens
             total_tokens += tokens_used
 
@@ -177,11 +178,10 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--language', type=is_supported_lan, default='en',
                         help="Language to chat in. Supported languages are: af, ar, bg, bs, ca, cs, da, de, el, en, es, et, fi, fr, hi, hr, hu, id, is, it, iw, ja, kn, ko, lv, mr, ms, ne, nl, no, pl, pt, ro, ru, sk, sr, sv, sw, ta, th, tr, uk, ur, vi")
     args = vars(parser.parse_args())
-    gpt.max_history = args['history']
-    global channels, rec_dur, language
+    global channels, rec_dur, language, history_len
+    history_len = args['history']
     channels = args['channels']
     rec_dur = args['duration']
     language = args['language']
 
     main()
-
