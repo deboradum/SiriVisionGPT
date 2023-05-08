@@ -9,6 +9,7 @@ import sys
 import threading
 import time
 import wavio as wv
+import yolo
 
 # Module files.
 import gpt
@@ -62,8 +63,7 @@ def record(event, query):
 def tts(text):
     if os.path.isfile('tts.mp3'):
         os.remove('tts.mp3')
-    global language
-    s = gtts.gTTS(text, lang=language)
+    s = gtts.gTTS(text, lang='en')
     s.save('tts.mp3')
     playsound.playsound('tts.mp3')
 
@@ -115,9 +115,10 @@ def get_start_sentence(lan):
 
 def main():
     # Initial text.
-    global language, history_len
-    gpt_handler = gpt.GPThandler(history_len, language)
-    response = get_start_sentence(language)
+    global history_len, yolo_rec_dur
+    gpt_handler = gpt.GPThandler(history_len, 'en')
+    yolo_handler = yolo.YoloHandler(rec_dur)
+    response = get_start_sentence('en')
     try:
         while True:
             # prints & speaks response.
@@ -126,7 +127,12 @@ def main():
             t.start()
 
             prompt = ""
-            prompt = input("\t")
+            if 'show' in gpt_handler.history[-1]['content']:
+                yolo_handler.infer_video()
+                prompt = 'Apple, pasta, beef'
+            else:
+                prompt = input("\t")
+
             # Empty prompt means use voice chat
             if prompt == "":
                 queryT = [None]
@@ -174,14 +180,14 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--channels', type=int, default=2,
                         help='Number of channels to record.')
     parser.add_argument('-d', '--duration', type=int, default=6,
-                        help='Number of seconds to record.')
-    parser.add_argument('-l', '--language', type=is_supported_lan, default='en',
-                        help="Language to chat in. Supported languages are: af, ar, bg, bs, ca, cs, da, de, el, en, es, et, fi, fr, hi, hr, hu, id, is, it, iw, ja, kn, ko, lv, mr, ms, ne, nl, no, pl, pt, ro, ru, sk, sr, sv, sw, ta, th, tr, uk, ur, vi")
+                        help='Number of seconds to record audio.')
+    parser.add_argument('-yd', '--yoloduration', type=int, default=6,
+                        help='Number of seconds to record video.')
     args = vars(parser.parse_args())
-    global channels, rec_dur, language, history_len
+    global channels, rec_dur, history_len, yolo_rec_dur
     history_len = args['history']
     channels = args['channels']
     rec_dur = args['duration']
-    language = args['language']
+    yolo_rec_dur = args['yoloduration']
 
     main()
