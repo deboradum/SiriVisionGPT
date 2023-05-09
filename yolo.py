@@ -3,7 +3,8 @@ from ultralytics import YOLO
 import time
 import torch
 
-model = YOLO('yolov8n.pt')
+# Needs to be replaced with trained model.
+model = YOLO('yolov8m.pt')
 
 class YoloHandler():
     def __init__(self, rec_dur, camera_id):
@@ -11,8 +12,8 @@ class YoloHandler():
         self.camera_id = camera_id
 
     def infer_video(self):
-        objects = ['Apple', 'Beef', 'Banana']
-
+        objects = set()
+        objects.update(['Apple', 'Beef', 'Banana'])  # tmp
         start = time.time()
         cv2.startWindowThread()
         cap = cv2.VideoCapture(camera_id)
@@ -31,7 +32,9 @@ class YoloHandler():
             results = model.predict(frame, conf=0.5, device='mps' if torch.backends.mps.is_available() else 'cpu', vid_stride=True, verbose=False)
             # plot object boxes.
             annotated_frame = results[0].plot()
-
+            boxes = results[0].boxes.cls
+            items = np.array([results[0].names[box.item()] for box in results[0].boxes.cls])
+            objects.update(items)
             # Display the resulting frame
             cv2.imshow('frame', annotated_frame)
             if cv2.waitKey(1) == ord('q') or time.time() - start > self.rec_dur:
