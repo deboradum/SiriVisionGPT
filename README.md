@@ -31,5 +31,15 @@ With parameters:
 
 The max history parameter is the amount of messages ChatGPT uses as reference history. All the tokens of these messages will need to parsed, so more history means a more expensive chat.
 
+After the word 'show' has been spoken, the camera will automatically be activated in the next prompt. A comma seperated string of the detected objects will then be used as the a prompt. For example:
+
+> (You) Im going to *show* you items of food, and you need to tell me if they are gluten free.
+
+> (SiriVisionGPT) Okay!
+
+> (You) ***Shows items on camera***
+
+> (SiriVisionGPT) ***Answers***
+
 # Demo
 WIP
