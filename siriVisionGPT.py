@@ -1,6 +1,8 @@
 # Imports.
 import argparse
+import ffmpeg
 import gtts
+import numpy as np
 import openai
 import os
 import playsound
@@ -67,9 +69,9 @@ def tts(text):
     s = gtts.gTTS(text, lang='en')
     s.save('tts.mp3')
     playsound.playsound('tts.mp3')
-
     if os.path.isfile('tts.mp3'):
         os.remove('tts.mp3')
+
 
 
 # Checks if language is supported.
@@ -130,9 +132,15 @@ def main():
 
             prompt = ""
             if 'show' in gpt_handler.history[-1]['content'] and 'barcode' in gpt_handler.history[-1]['content']:
-                prompt = f'{barcode_handler.record()}\n'
+                time.sleep(7)
+                prompt = f'\n{barcode_handler.record()}\n'
+                # Check if barcode was found.
+                if prompt == '\nnot found\n':
+                    response = "\nI'm sorry, I do not know this barcode.\n"
+                    continue
             elif 'show' in gpt_handler.history[-1]['content']:
-                prompt = f'{yolo_handler.infer_video()}\n'
+                time.sleep(7)
+                prompt = f'\n{yolo_handler.infer_video()}\n'
             else:
                 prompt = input("\t")
 
@@ -142,6 +150,7 @@ def main():
                 e = threading.Event()
                 t = threading.Thread(target=record, args=(e, queryT), daemon=True)
                 t.start()
+
                 while not e.is_set():
                     print('\tRecording.', end="\r", flush=True)
                     time.sleep(0.4)
@@ -152,6 +161,7 @@ def main():
                     sys.stdout.write("\033[K")
                     time.sleep(0.4)
                 prompt = queryT[0]
+
                 if prompt is None:
                     print('\tError parsing prompt.\n')
                     continue
@@ -161,6 +171,7 @@ def main():
             response, tokens_used = gpt_handler.conversate(prompt)
             global total_tokens
             total_tokens += tokens_used
+
 
     # Catches ctrl+c & exits program.
     except KeyboardInterrupt:

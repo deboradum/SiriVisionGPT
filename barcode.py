@@ -42,8 +42,8 @@ class BarcodeReader():
         cv2.destroyAllWindows()
         cv2.waitKey(1)
 
-        if barcode is None:
-            return "No barcode found."
+        if barcode ==  'not found':
+            return 'not found'
 
         # Gets food information.
         food = self.get_food(barcode)
@@ -55,7 +55,7 @@ class BarcodeReader():
         search_result = openfoodfacts.products.get_product(barcode)
 
         if search_result['status_verbose'] == 'product not found':
-            return None
+            return 'not found'
 
         search_result = dict(search_result['product'])
 
