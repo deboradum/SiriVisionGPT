@@ -2,6 +2,7 @@ import cv2
 from ultralytics import YOLO
 import time
 import torch
+import numpy as np
 
 # Needs to be replaced with trained model.
 model = YOLO('yolov8m.pt')
@@ -16,7 +17,7 @@ class YoloHandler():
         objects.update(['Apple', 'Beef', 'Banana'])  # tmp
         start = time.time()
         cv2.startWindowThread()
-        cap = cv2.VideoCapture(camera_id)
+        cap = cv2.VideoCapture(self.camera_id)
         if not cap.isOpened():
             print("Cannot open camera")
             exit()
@@ -46,6 +47,6 @@ class YoloHandler():
 
         objects_s = ''
         for i in objects:
-            objects_s +=  f"{i}, " 
+            objects_s +=  f"{i}, "
 
         return objects_s

@@ -65,6 +65,3 @@ class BarcodeReader():
 
 
         return result
-
-x = BarcodeReader(10, 0)
-x.record()
