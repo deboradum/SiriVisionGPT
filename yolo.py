@@ -1,19 +1,21 @@
 import cv2
 from ultralytics import YOLO
 import time
+import torch
 
 model = YOLO('yolov8n.pt')
 
 class YoloHandler():
-    def __init__(self, rec_dur):
+    def __init__(self, rec_dur, camera_id):
         self.rec_dur = rec_dur
+        self.camera_id = camera_id
 
     def infer_video(self):
         objects = ['Apple', 'Beef', 'Banana']
 
         start = time.time()
         cv2.startWindowThread()
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(camera_id)
         if not cap.isOpened():
             print("Cannot open camera")
             exit()
@@ -26,7 +28,7 @@ class YoloHandler():
                 print("Can't receive frame. Exiting ...")
                 break
             # Predict with yolo.
-            results = model.predict(frame, conf=0.6, device='mps', vid_stride=True, verbose=False)
+            results = model.predict(frame, conf=0.5, device='mps' if torch.backends.mps.is_available() else 'cpu', vid_stride=True, verbose=False)
             # plot object boxes.
             annotated_frame = results[0].plot()
 

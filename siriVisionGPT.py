@@ -115,9 +115,9 @@ def get_start_sentence(lan):
 
 def main():
     # Initial text.
-    global history_len, yolo_rec_dur
+    global history_len, yolo_rec_dur, camera_id
     gpt_handler = gpt.GPThandler(history_len, 'en')
-    yolo_handler = yolo.YoloHandler(rec_dur)
+    yolo_handler = yolo.YoloHandler(rec_dur, camera_id)
     response = get_start_sentence('en')
     try:
         while True:
@@ -180,13 +180,16 @@ if __name__ == "__main__":
                         help='Number of channels to record.')
     parser.add_argument('-d', '--duration', type=int, default=6,
                         help='Number of seconds to record audio.')
-    parser.add_argument('-yd', '--yoloduration', type=int, default=6,
+    parser.add_argument('-yd', '--yoloduration', type=int, default=9,
                         help='Number of seconds to record video.')
+    parser.add_argument('-yc', '--camera', type=int, default=0,
+                        help='Index of the camera yolo will use as input.')
     args = vars(parser.parse_args())
-    global channels, rec_dur, history_len, yolo_rec_dur
+    global channels, rec_dur, history_len, yolo_rec_dur, camera_id
     history_len = args['history']
     channels = args['channels']
     rec_dur = args['duration']
     yolo_rec_dur = args['yoloduration']
+    camera_id = args['camera']
 
     main()
