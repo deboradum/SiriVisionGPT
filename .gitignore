@@ -1,7 +1,8 @@
 .env
 TODO
-testData
 .DS_Store
-yolov8n.pt
+*.pt
 *.MOV
 __pycache__
+*test*
+*.webp
