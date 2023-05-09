@@ -9,11 +9,12 @@ import sys
 import threading
 import time
 import wavio as wv
-import yolo
 
 # Module files.
+import barcode
 import gpt
 import whisper
+import yolo
 
 
 # Whisper prijs tracken
@@ -117,7 +118,8 @@ def main():
     # Initial text.
     global history_len, yolo_rec_dur, camera_id
     gpt_handler = gpt.GPThandler(history_len, 'en')
-    yolo_handler = yolo.YoloHandler(rec_dur, camera_id)
+    yolo_handler = yolo.YoloHandler(yolo_rec_dur, camera_id)
+    barcode_handler = barcode.BarcodeReader(yolo_rec_dur, camera_id)
     response = get_start_sentence('en')
     try:
         while True:
@@ -127,7 +129,9 @@ def main():
             t.start()
 
             prompt = ""
-            if 'show' in gpt_handler.history[-1]['content']:
+            if 'show' in gpt_handler.history[-1]['content'] and 'barcode' in gpt_handler.history[-1]['content']:
+                prompt = f'{barcode_handler.record()}\n'
+            elif 'show' in gpt_handler.history[-1]['content']:
                 prompt = f'{yolo_handler.infer_video()}\n'
             else:
                 prompt = input("\t")
@@ -176,7 +180,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-mh', '--history', type=int, default=10,
                         help='Maximum number of messages GPT will save and use as history of the conversation. More hisotry means more tokens used.')
-    parser.add_argument('-c', '--channels', type=int, default=2,
+    parser.add_argument('-c', '--channels', type=int, default=1,
                         help='Number of channels to record.')
     parser.add_argument('-d', '--duration', type=int, default=6,
                         help='Number of seconds to record audio.')
