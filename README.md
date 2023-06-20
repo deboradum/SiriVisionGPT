@@ -31,6 +31,7 @@ With parameters:
 
 The max history parameter is the amount of messages ChatGPT uses as reference history. All the tokens of these messages will need to parsed, so more history means a more expensive chat.
 
+## Vision mode
 After the word 'show' has been spoken, the camera will automatically be activated in the next prompt. A comma seperated string of the detected objects will then be used as the a prompt. For example:
 
 > (You) Im going to *show* you items of food, and you need to tell me if they are gluten free.
@@ -38,6 +39,17 @@ After the word 'show' has been spoken, the camera will automatically be activate
 > (SiriVisionGPT) Okay!
 
 > (You) ***Shows items on camera***
+
+> (SiriVisionGPT) ***Answers***
+
+## Barcode mode
+After the words 'show' and 'barcode' have been spoken, barcode mode is activated. You can now show a barcode on the camera and if this barcode is present in the [openfoodfacts](https://world.openfoodfacts.org/) database, information about the product is sent to GPT to use in the answer to your question. For example:
+
+> (You) Im going to *show* you a *barcode*. Can I eat this if I am allergic to peanuts?
+
+> (SiriVisionGPT) Okay!
+
+> (You) ***Shows barcode on camera***
 
 > (SiriVisionGPT) ***Answers***
 
